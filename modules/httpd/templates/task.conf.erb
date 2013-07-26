@@ -1,0 +1,15 @@
+NameVirtualHost *:80
+
+<VirtualHost *:80>
+
+    ServerName <%= @serverName %>
+    DocumentRoot <%= @documentRoot %>
+    ServerAdmin "jakub.jedelsky@gmail.com"
+
+    AddHandler cgi-script .cgi .pl
+    DirectoryIndex index.pl   
+    <Directory <%= @documentRoot %>>
+        AllowOverride None
+        Options +ExecCGI
+    </Directory>
+</VirtualHost>
