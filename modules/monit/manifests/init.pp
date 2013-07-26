@@ -14,9 +14,10 @@ class monit(
         mode    => 0600,
         owner   => 'root',
         group   => 'root',
-        require => Package['monit'];
+        notify  => Service['monit'],
+    }
 
-        "/etc/monit.d":
+    file { "/etc/monit.d":
         ensure  => directory,
         mode    => 0750,
         owner   => 'root',
@@ -27,5 +28,6 @@ class monit(
         ensure  => running,
         hasstatus => true,
         hasrestart => true,
+        require => Package['monit'];
     }
 }
