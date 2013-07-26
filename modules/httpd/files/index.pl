@@ -8,20 +8,20 @@ use CGI;
 # eg. { DAY => 52, HOUR => 16, MIN => 6, SEC => 56}
 sub uptime()
 {
-    open(UPTIME, '/proc/uptime')
-        or die "Can't read uptime file!\n";
-    my $uptime = <UPTIME>;
-    close(UPTIME);
-    my $secs =  (split /\s+/,$uptime)[0];
+    if (open(UPTIME, '/proc/uptime')) {
+        my $uptime = <UPTIME>;
+        close(UPTIME);
+        my $secs =  (split /\s+/,$uptime)[0];
 
-    my %retval = (
-        "DAY"   => int($secs/(24*60*60)),
-        "HOUR"  => ($secs/(60*60))%24,
-        "MIN"   => ($secs/60)%60,
-        "SEC"   => $secs%60
-    );
-
-    return %retval;
+        my %retval = (
+            "DAY"   => int($secs/(24*60*60)),
+            "HOUR"  => ($secs/(60*60))%24,
+            "MIN"   => ($secs/60)%60,
+            "SEC"   => $secs%60
+        );
+    
+        return %retval;
+    }
 }
 
 # get_dist returns a string with running distribution (read from /etc/system-release)
@@ -57,9 +57,10 @@ sub cpu_info
 
     open(CPU, '/proc/cpuinfo');
     while (<CPU>) {
-        if (/^processor\s*:.*\n$/) {
+        chomp;
+        if (/^processor\s*:.*$/) {
             $NUM +=1;
-        } elsif (/^physical id\s*: (.*)\n$/) {
+        } elsif (/^physical id\s*: (.*)$/) {
             $PHYS{$1} = undef;
         }
     }
@@ -112,10 +113,37 @@ sub logged_users()
     return @retval;
 }
 
+# memory() returns a hash with info about system memory
+# keys: MEMTOTAL, MEMINFO
+sub memory()
+{
+    my $MEMTOTAL;
+    my $MEMFREE;
+    my %retval;
+
+    open(MEM, '/proc/meminfo');
+    while (<MEM>) {
+        chomp;
+        if (/^MemTotal:\s+(\d+)/) {
+            $MEMTOTAL = sprintf("%.0f", $1/1024);
+        } elsif (/^MemFree:\s+(\d+)/) {
+            $MEMFREE = sprintf("%.0f", $1/1024);
+        } elsif (/^Buffers:\s+(\d+)/) {
+            $MEMFREE += sprintf("%.0f", $1/1024);
+        } elsif (/^Cached:\s+(\d+)/) {
+            $MEMFREE += sprintf("%.0f", $1/1024);
+        } 
+    }
+
+    %retval = (
+        "MEMTOTAL"  => $MEMTOTAL,
+        "MEMFREE"   => $MEMFREE,
+    );
+    return %retval;
+}
+
 my %uptime = uptime();
 my %cpuinfo = cpu_info();
-
-my @lu = logged_users();
 
 # let's create a web page
 my $q = CGI->new();
