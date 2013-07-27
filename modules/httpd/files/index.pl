@@ -83,14 +83,14 @@ sub cpu_info
 # num_processes() returns a number of running processes
 sub num_processes()
 {
-    my @list = `ps -ef`;
+    my @list = `/bin/ps -ef`;
     return scalar(@list) - 1;
 }
 
 # num_files() returns a number of opened files on a system
 sub num_files()
 {
-    my @list = `lsof`;
+    my @list = `/usr/sbin/lsof`;
     return scalar(@list) - 1;
 }
 
@@ -100,7 +100,7 @@ sub logged_users()
 
     my @retval;
 
-    my @output = `who`;
+    my @output = `/usr/bin/who -u`;
     foreach my $line (@output) {
         my ($name,$term,$date,$time) = split /\s+/, $line;
         push(@retval, {
