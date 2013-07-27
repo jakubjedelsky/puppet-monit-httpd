@@ -8,6 +8,13 @@ class monit(
         ensure  => present,
     }
 
+    service { "monit":
+        ensure  => running,
+        hasstatus => true,
+        hasrestart => true,
+        require => Package['monit'],
+    }
+
     file { "/etc/monit.conf":
         ensure  => file,
         content => template("monit/monit.conf.erb"),
@@ -22,12 +29,5 @@ class monit(
         mode    => 0750,
         owner   => 'root',
         group   => 'root',
-    }
-
-    service { "monit":
-        ensure  => running,
-        hasstatus => true,
-        hasrestart => true,
-        require => Package['monit'];
     }
 }

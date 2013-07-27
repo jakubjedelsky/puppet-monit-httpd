@@ -7,29 +7,30 @@ class httpd {
 }
 
 class httpd::monit {
-    require ::monit
-    include httpd
+    include ::monit
     
     file {'/etc/monit.d/httpd':
     	ensure	=> file,
     	mode	=> 0640,
     	source	=> 'puppet:///modules/httpd/httpd',
-        notify  => Service['httpd'],
+        notify  => Service['monit'],
     }
     
     service {'httpd':
-	    provider => "monit",
-        enable  => true,
-    	ensure	=> running,
-    	hasstatus => true,
+	    provider      => "monit",
+        enable     => true,
+    	ensure	       => running,
+    	hasstatus     => true,
         hasrestart => true,
+        require    => File['/etc/monit.d/httpd'],
     }
 }
-# TODO
+
 class httpd::task (
-    $serverName = "gooddata",
+    $serverName = "testserver",
     $documentRoot = '/var/www/task'
 ) {
+    include httpd
     include httpd::monit
 
     package { 'perl-CGI':
@@ -39,10 +40,10 @@ class httpd::task (
         ensure => installed,
     }
 
-    user { "cgi":
-        ensure    => present,
-        shell     => '/bin/bash',
-        home      => "${documentRoot}",
+    user {"cgi":
+        ensure  => present,
+        shell   => '/bin/bash',
+        home    => "${documentRoot}",
     }
 
     file {"${documentRoot}":
@@ -50,6 +51,7 @@ class httpd::task (
         owner   => 'cgi',
         group   => 'cgi',
         mode    => 0755,
+        require => User['cgi'],
     }
 
     file {"${documentRoot}/index.pl":
@@ -71,10 +73,11 @@ class httpd::task (
     
     file { '/etc/httpd/conf.d/task.conf':
         ensure  => file,
-        content => template('httpd/task.conf.erb'),
         mode    => 0644,
         owner   => 'root',
         group   => 'root',
+        require => Package['httpd'],
         notify  => Service['httpd'],
+        content => template('httpd/task.conf.erb'),
     }
 }
