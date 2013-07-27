@@ -147,6 +147,7 @@ my $q = CGI->new();
 
 my %uptime = uptime();
 my %cpuinfo = cpu_info();
+my %memory = memory();
 my @users = logged_users();
 
 print   $q->header(-charset=>'utf-8'),
@@ -162,12 +163,19 @@ print   $q->header(-charset=>'utf-8'),
                 $q->dd($cpuinfo{'CPUS'}),
             $q->dt("Cores per CPU"),
                 $q->dd($cpuinfo{"CORES"}),
+            $q->dt("Memory"),
+                $q->dd("Total: $memory{'MEMTOTAL'}, Free: $memory{'MEMFREE'}"),
             $q->dt("Load"),
                 $q->dd(load()),
             $q->dt("Uptime"),
                 $q->dd("$uptime{'DAY'} days, $uptime{'HOUR'} hours, $uptime{'MIN'} minutes and $uptime{'SEC'} seconds"),
+            $q->dt("No. of open files"),
+                $q->dd(num_files()),
+            $q->dt("No. of processes"),
+                $q->dd(num_processes()),
         $q->end_dl();
         
+
 print   $q->start_table({-class=>"table"}),
             $q->start_Tr,
                 $q->th("Name"),
