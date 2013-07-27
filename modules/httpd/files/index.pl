@@ -150,18 +150,40 @@ my %cpuinfo = cpu_info();
 my @users = logged_users();
 
 print   $q->header(-charset=>'utf-8'),
-        $q->start_html('sysinfo'),
-        $q->p("Distribution: ", get_dist()),
-        $q->p("Load: ", load()),
-        $q->p("Uptime: ",$uptime{"DAY"} ,"days,",$uptime{"HOUR"},"hours,", $uptime{"MIN"} ,"minutes and", $uptime{"SEC"} ,"seconds"),
-        $q->p("CPUs: ", $cpuinfo{"CPUS"}, "cores per cpu: ", $cpuinfo{"CORES"}),
-        $q->start_table(-border=>0);
-        foreach (@users) {
-            print $q->start_Tr,
-                $q->start_td, $_->{name},$q->end_td,
-                $q->start_td, $_->{term},$q->end_td,
-                $q->start_td, $_->{date},$q->end_td,
-                $q->start_td, $_->{time},$q->end_td,
+        $q->start_html({-title=>'sysinfo', -style=>{-src=>['css/bootstrap.min.css'], -media=>'all'}}),
+        $q->start_div({-class=>"container"}),
+
+        $q->h1("System info"),
+
+        $q->start_dl({-class=>"dl-horizontal"}),
+            $q->dt("Distribution"),
+                $q->dd(get_dist()),
+            $q->dt("CPUs"),
+                $q->dd($cpuinfo{'CPUS'}),
+            $q->dt("Cores per CPU"),
+                $q->dd($cpuinfo{"CORES"}),
+            $q->dt("Load"),
+                $q->dd(load()),
+            $q->dt("Uptime"),
+                $q->dd("$uptime{'DAY'} days, $uptime{'HOUR'} hours, $uptime{'MIN'} minutes and $uptime{'SEC'} seconds"),
+        $q->end_dl();
+        
+print   $q->start_table({-class=>"table"}),
+            $q->start_Tr,
+                $q->th("Name"),
+                $q->th("Term"),
+                $q->th("Date"),
+                $q->th("Time"),
             $q->end_Tr;
-        };
-print   $q->end_html();
+            foreach (@users) {
+                print $q->start_Tr,
+                    $q->td($_->{name}),
+                    $q->td($_->{term}),
+                    $q->td($_->{date}),
+                    $q->td($_->{time}),
+                $q->end_Tr;
+            };
+print   $q->end_table(),
+
+        $q->end_div(),
+        $q->end_html();
