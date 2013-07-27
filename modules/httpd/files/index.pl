@@ -103,12 +103,12 @@ sub logged_users()
     my @output = `who`;
     foreach my $line (@output) {
         my ($name,$term,$date,$time) = split /\s+/, $line;
-#        push(@retval, {
-#            "name" => $name,
-#            "term" => $term,
-#            "date" => $date,
-#            "time" => $time,
-#        });
+        push(@retval, {
+            "name" => $name,
+            "term" => $term,
+            "date" => $date,
+            "time" => $time,
+        });
     }
     return @retval;
 }
@@ -142,15 +142,26 @@ sub memory()
     return %retval;
 }
 
-my %uptime = uptime();
-my %cpuinfo = cpu_info();
-
 # let's create a web page
 my $q = CGI->new();
+
+my %uptime = uptime();
+my %cpuinfo = cpu_info();
+my @users = logged_users();
+
 print   $q->header(-charset=>'utf-8'),
         $q->start_html('sysinfo'),
         $q->p("Distribution: ", get_dist()),
         $q->p("Load: ", load()),
         $q->p("Uptime: ",$uptime{"DAY"} ,"days,",$uptime{"HOUR"},"hours,", $uptime{"MIN"} ,"minutes and", $uptime{"SEC"} ,"seconds"),
         $q->p("CPUs: ", $cpuinfo{"CPUS"}, "cores per cpu: ", $cpuinfo{"CORES"}),
-        $q->end_html();
+        $q->start_table(-border=>0);
+        foreach (@users) {
+            print $q->start_Tr,
+                $q->start_td, $_->{name},$q->end_td,
+                $q->start_td, $_->{term},$q->end_td,
+                $q->start_td, $_->{date},$q->end_td,
+                $q->start_td, $_->{time},$q->end_td,
+            $q->end_Tr;
+        };
+print   $q->end_html();
