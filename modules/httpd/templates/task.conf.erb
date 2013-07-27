@@ -7,7 +7,8 @@ NameVirtualHost *:80
     ServerAdmin "jakub.jedelsky@gmail.com"
 
     AddHandler cgi-script .cgi .pl
-    DirectoryIndex index.pl   
+    DirectoryIndex index.pl
+    SuexecUserGroup cgi cgi
     <Directory <%= @documentRoot %>>
         AllowOverride None
         Options +ExecCGI

@@ -35,19 +35,28 @@ class httpd::task (
     package { 'perl-CGI':
         ensure  => installed,
     }
+    package { 'lsof':
+        ensure => installed,
+    }
+
+    user { "cgi":
+        ensure    => present,
+        shell     => '/bin/bash',
+        home      => "${documentRoot}",
+    }
 
     file {"${documentRoot}":
         ensure  => directory,
-        owner   => 'root',
-        group   => 'apache',
-        mode    => 0750,
+        owner   => 'cgi',
+        group   => 'cgi',
+        mode    => 0755,
     }
 
     file {"${documentRoot}/index.pl":
         ensure  => file,
         source  => 'puppet:///modules/httpd/index.pl',
-        owner   => 'apache',
-        group   => 'apache',
+        owner   => 'cgi',
+        group   => 'cgi',
         mode    => 0750,
         require => Package['perl-CGI'],
     }
@@ -55,8 +64,8 @@ class httpd::task (
     file {"${documentRoot}/bootstrap.min.css":
         ensure => file,
         source => 'puppet:///modules/httpd/bootstrap.min.css',
-        owner  => 'apache',
-        group  => 'apache',
+        owner  => 'cgi',
+        group  => 'cgi',
         mode   => 0644,
     }
     
