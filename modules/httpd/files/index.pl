@@ -151,7 +151,7 @@ my %memory = memory();
 my @users = logged_users();
 
 print   $q->header(-charset=>'utf-8'),
-        $q->start_html({-title=>'sysinfo', -style=>{-src=>['css/bootstrap.min.css'], -media=>'all'}}),
+        $q->start_html({-title=>'sysinfo', -style=>{-src=>['bootstrap.min.css'], -media=>'all'}}),
         $q->start_div({-class=>"container"}),
 
         $q->h1("System info"),

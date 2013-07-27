@@ -51,6 +51,14 @@ class httpd::task (
         mode    => 0750,
         require => Package['perl-CGI'],
     }
+
+    file {"${documentRoot}/bootstrap.min.css":
+        ensure => file,
+        source => 'puppet:///modules/httpd/bootstrap.min.css',
+        owner  => 'apache',
+        group  => 'apache',
+        mode   => 0644,
+    }
     
     file { '/etc/httpd/conf.d/task.conf':
         ensure  => file,
