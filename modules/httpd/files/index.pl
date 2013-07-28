@@ -196,7 +196,7 @@ print   $q->header(-charset=>'utf-8'),
         $q->end_dl();
         
 print	$q->h3("Logged users:"),
-        $q->start_table({-class=>"table"}),
+        $q->start_table({-class=>"table table-striped"}),
             $q->start_Tr,
                 $q->th("Name"),
                 $q->th("Term"),
@@ -214,7 +214,7 @@ print	$q->h3("Logged users:"),
 print   $q->end_table();
 
 print   $q->h3("Running processes:"),
-        $q->start_table({-class=>"table"}),
+        $q->start_table({-class=>"table table-striped"}),
         $q->start_Tr,
             $q->th("UID"),
             $q->th("PID"),
@@ -238,7 +238,6 @@ print   $q->h3("Running processes:"),
                       $q->end_Tr;
             };
 print   $q->end_table(),
-
 
         $q->end_div(),
         $q->end_html();
