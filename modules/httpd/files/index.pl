@@ -144,6 +144,7 @@ sub memory()
 
 # let's create a web page
 my $q = CGI->new();
+$ENV{'LANG'} = 'en_US.utf8';
 
 my %uptime = uptime();
 my %cpuinfo = cpu_info();
