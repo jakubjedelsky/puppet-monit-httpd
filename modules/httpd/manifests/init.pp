@@ -1,6 +1,6 @@
 class httpd {
 
-    package {'httpd':
+    package { "httpd":
     	ensure	=> installed,
     }
 
@@ -9,14 +9,14 @@ class httpd {
 class httpd::monit {
     include ::monit
     
-    file {'/etc/monit.d/httpd':
+    file { "/etc/monit.d/httpd":
     	ensure	=> file,
     	mode	=> 0640,
     	source	=> 'puppet:///modules/httpd/httpd',
         notify  => Service['monit'],
     }
     
-    service {'httpd':
+    service { "httpd":
 	    provider      => "monit",
         enable     => true,
     	ensure	       => running,
@@ -33,28 +33,29 @@ class httpd::task (
     include httpd
     include httpd::monit
 
-    package { 'perl-CGI':
+    package { "perl-CGI":
         ensure  => installed,
     }
-    package { 'lsof':
+    package { "lsof":
         ensure => installed,
     }
 
-    user {"cgi":
-        ensure  => present,
-        shell   => '/bin/bash',
-        home    => "${documentRoot}",
-    }
-
-    file {"${documentRoot}":
+    file { "${documentRoot}":
         ensure  => directory,
+        recurse => true,
         owner   => 'cgi',
         group   => 'cgi',
         mode    => 0755,
         require => User['cgi'],
     }
 
-    file {"${documentRoot}/index.pl":
+    user { "cgi":
+        ensure  => present,
+        shell   => '/bin/bash',
+        home    => "${documentRoot}",
+    }
+
+    file { "${documentRoot}/index.pl":
         ensure  => file,
         source  => 'puppet:///modules/httpd/index.pl',
         owner   => 'cgi',
@@ -63,7 +64,7 @@ class httpd::task (
         require => Package['perl-CGI'],
     }
 
-    file {"${documentRoot}/bootstrap.min.css":
+    file { "${documentRoot}/bootstrap.min.css":
         ensure => file,
         source => 'puppet:///modules/httpd/bootstrap.min.css',
         owner  => 'cgi',
@@ -71,7 +72,7 @@ class httpd::task (
         mode   => 0644,
     }
     
-    file { '/etc/httpd/conf.d/task.conf':
+    file { "/etc/httpd/conf.d/task.conf":
         ensure  => file,
         mode    => 0644,
         owner   => 'root',
