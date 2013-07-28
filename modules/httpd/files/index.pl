@@ -81,10 +81,28 @@ sub cpu_info
 }
 
 # num_processes() returns a number of running processes
-sub num_processes()
+sub ps()
 {
-    my @list = `/bin/ps -ef`;
-    return scalar(@list) - 1;
+    my @retval;
+
+    my @output = `/bin/ps aux`;
+    foreach my $line (@output) {
+        my($uid,$pid,$cpu,$mem,$vsz,$rss,$tty,$stat,$start,$time,$command) = split(/\s+/, $line, 11);
+        push(@retval, {
+            "uid" => $uid,
+            "pid" => $pid,
+            "cpu" => $cpu,
+            "mem" => $mem,
+            "vsz" => $vsz,
+            "rss" => $rss,
+            "stat" => $stat,
+            "start" => $start,
+            "time" => $time,
+            "cmd" => $command,
+        });
+    }
+    shift @retval;
+    return @retval;
 }
 
 # num_files() returns a number of opened files on a system
@@ -149,6 +167,7 @@ $ENV{'LANG'} = 'en_US.utf8';
 my %uptime = uptime();
 my %cpuinfo = cpu_info();
 my %memory = memory();
+my @ps = ps();
 my @users = logged_users();
 
 print   $q->header(-charset=>'utf-8'),
@@ -173,11 +192,11 @@ print   $q->header(-charset=>'utf-8'),
             $q->dt("No. of open files"),
                 $q->dd(num_files()),
             $q->dt("No. of processes"),
-                $q->dd(num_processes()),
+                $q->dd(scalar @ps),
         $q->end_dl();
         
-
-print   $q->start_table({-class=>"table"}),
+print	$q->h3("Logged users:"),
+        $q->start_table({-class=>"table"}),
             $q->start_Tr,
                 $q->th("Name"),
                 $q->th("Term"),
@@ -192,7 +211,34 @@ print   $q->start_table({-class=>"table"}),
                     $q->td($_->{time}),
                 $q->end_Tr;
             };
+print   $q->end_table();
+
+print   $q->h3("Running processes:"),
+        $q->start_table({-class=>"table"}),
+        $q->start_Tr,
+            $q->th("UID"),
+            $q->th("PID"),
+            $q->th("%CPU"),
+            $q->th("%MEM"),
+            $q->th("STAT"),
+            $q->th("START"),
+            $q->th("TIME"),
+            $q->th("COMMAND"),
+        $q->end_Tr;
+            foreach (@ps) {
+                print $q->start_Tr,
+                          $q->td($_->{uid}),
+                          $q->td($_->{pid}),
+                          $q->td($_->{cpu}),
+                          $q->td($_->{mem}),
+                          $q->td($_->{stat}),
+                          $q->td($_->{start}),
+                          $q->td($_->{time}),
+                          $q->td($q->code($_->{cmd})),
+                      $q->end_Tr;
+            };
 print   $q->end_table(),
+
 
         $q->end_div(),
         $q->end_html();
