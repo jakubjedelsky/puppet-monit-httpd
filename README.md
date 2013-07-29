@@ -14,7 +14,7 @@ For test puppet modules on a local system clone this repo and run `puppet apply 
 ```bash
 git clone https://github.com/jakubjedelsky/puppet-monit-httpd.git
 cd puppet-monit-httpd
-puppet apply --modulepath=$(pwd)/modules -d -e "include monit" -e "include httpd::monit"
+puppet apply --modulepath=$(pwd)/modules -d -e "include monit" -e "include httpd::task"
 ```
 
 # Customize
