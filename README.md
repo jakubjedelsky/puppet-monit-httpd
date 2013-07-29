@@ -7,7 +7,7 @@ There are two puppet modules:
 2.  module `httpd`: install and configure simple apache page. Apache is running as a service under monit.
 
 # Test it
-For test puppet modules on a local system checkout this repo and run `puppet apply -e "include httpd:task"`:
+For test puppet modules on a local system clone this repo and run `puppet apply -e "include httpd:task"`:
 ```bash
 git clone https://github.com/jakubjedelsky/puppet-monit-httpd.git
 cd puppet-monit-httpd
