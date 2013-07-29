@@ -23,3 +23,6 @@ For customize Monit service you can use variables:
 For customize httpd you can use variables (only for test environment):
 - `$serverName` - a server name of virtual host
 - `$documentRoot` - a path where we store CGI script for testing
+
+# CGI script
+There is a CGI script stored in `modules/httpd/files/index.pl` for check if apache runs ok. It prints out info about running system from basic files (from `/proc`) and commands (`ps`, `who`, `lsof`).
